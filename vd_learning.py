@@ -2,7 +2,7 @@ import pickle
 import torch
 import torch.optim as optim
 import collections
-from lib.nnetwork import Network
+from lib.network import Network
 from lib.experience_buffer import ExperienceBuffer
 from lib.extended_game import ExtendedGame
 from lib.agent import Agent
