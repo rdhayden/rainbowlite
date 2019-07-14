@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print("pass: action is an int and is between 1 and 3")
 
     print(
-        "Visually test ExtendedGame: start game, move right 4 times, fire 12 times, move left 4 times"
+        "Visually test ExtendedGame: start game, move right 4 times, move left 4 times, fire 12 times"
     )
     device = torch.device("cuda")
     game = ExtendedGame("scenarios/basic.cfg")
@@ -39,19 +39,19 @@ if __name__ == "__main__":
     print("reward {}".format(reward))
 
     input(
-        "Press any key to make fire action 12 times, each action repeats for 4 frames"
-    )
-    reward = 0
-    for i in range(12):
-        reward += game.make_action_int(2, 4)
-    print("reward {}".format(reward))
-
-    input(
         "Press any key to make right action 4 times, each action repeats for 4 frames"
     )
     reward = 0
     for i in range(4):
         reward += game.make_action_int(1, 4)
+    print("reward {}".format(reward))
+
+    input(
+        "Press any key to make fire action 12 times, each action repeats for 4 frames"
+    )
+    reward = 0
+    for i in range(12):
+        reward += game.make_action_int(2, 4)
     print("reward {}".format(reward))
 
     input("Press any key to continue")
