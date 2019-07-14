@@ -2,7 +2,7 @@ import argparse
 import torch
 import torch.optim as optim
 import collections
-from lib.conv_net import ConvNet
+from lib.network import Network
 from lib.experience_buffer import ExperienceBuffer
 from lib.extended_game import ExtendedGame
 from lib.agent import Agent
@@ -65,8 +65,8 @@ if __name__ == "__main__":
     height = 54
     repeat_for_frames = 4
     net_shape = (num_frames_stacked, width, height)
-    train_net = ConvNet(net_shape, game.n_actions).to(device)
-    target_net = ConvNet(net_shape, game.n_actions).to(device)
+    train_net = Network(net_shape, game.n_actions).to(device)
+    target_net = Network(net_shape, game.n_actions).to(device)
     agent = Agent(
         game,
         train_net,

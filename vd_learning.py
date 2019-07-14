@@ -2,7 +2,7 @@ import pickle
 import torch
 import torch.optim as optim
 import collections
-from lib.conv_net import ConvNet
+from lib.nnetwork import Network
 from lib.experience_buffer import ExperienceBuffer
 from lib.extended_game import ExtendedGame
 from lib.agent import Agent
@@ -68,30 +68,30 @@ if __name__ == "__main__":
         default=2000,
         help="Number of training steps per epoch. Default: 2000",
     )
-    parser.add_argument(
-        "--eps_const",
-        type=float,
-        default=0.05,
-        help="Proportion of time to keep epsilon constant initially. Default: 0.05",
-    )
-    parser.add_argument(
-        "--eps_max",
-        type=float,
-        default=0.95,
-        help="Determines the final frame (as a proportion of total frames) to degrade epsilon. Default: 0.95",
-    )
-    parser.add_argument(
-        "--epsilon_start",
-        type=float,
-        default=1.0,
-        help="Epsilon start value. Default: 1.0",
-    )
-    parser.add_argument(
-        "--epsilon_final",
-        type=float,
-        default=0.01,
-        help="Epsilon final value. Default: 0.01",
-    )
+    # parser.add_argument(
+    #     "--eps_const",
+    #     type=float,
+    #     default=0.05,
+    #     help="Proportion of time to keep epsilon constant initially. Default: 0.05",
+    # )
+    # parser.add_argument(
+    #     "--eps_max",
+    #     type=float,
+    #     default=0.95,
+    #     help="Determines the final frame (as a proportion of total frames) to degrade epsilon. Default: 0.95",
+    # )
+    # parser.add_argument(
+    #     "--epsilon_start",
+    #     type=float,
+    #     default=1.0,
+    #     help="Epsilon start value. Default: 1.0",
+    # )
+    # parser.add_argument(
+    #     "--epsilon_final",
+    #     type=float,
+    #     default=0.01,
+    #     help="Epsilon final value. Default: 0.01",
+    # )
     parser.add_argument(
         "--replay_buffer_size",
         type=int,
@@ -181,12 +181,12 @@ if __name__ == "__main__":
     game.init()
     writer = SummaryWriter(logdir=args.log_dir)
 
-    total_training_steps = args.epochs * args.steps_per_epoch
-    epsilon_decay_first_frame = total_training_steps * args.eps_const
-    epsilon_decay_last_frame = total_training_steps * args.eps_max
-    epsilon_amount_to_decay = args.epsilon_start - args.epsilon_final
-    epsilon_decay_over_frames = epsilon_decay_last_frame - epsilon_decay_first_frame
-    epsilon_decay_per_frame = epsilon_amount_to_decay / epsilon_decay_over_frames
+    # total_training_steps = args.epochs * args.steps_per_epoch
+    # epsilon_decay_first_frame = total_training_steps * args.eps_const
+    # epsilon_decay_last_frame = total_training_steps * args.eps_max
+    # epsilon_amount_to_decay = args.epsilon_start - args.epsilon_final
+    # epsilon_decay_over_frames = epsilon_decay_last_frame - epsilon_decay_first_frame
+    # epsilon_decay_per_frame = epsilon_amount_to_decay / epsilon_decay_over_frames
 
     experience_buffer = ExperienceBuffer(
         args.replay_buffer_size, args.n_steps, args.gamma
@@ -197,8 +197,8 @@ if __name__ == "__main__":
 
     # setup the training and target networks
     net_shape = (args.num_frames_stacked, width, height)
-    train_net = ConvNet(net_shape, game.n_actions).to(device)
-    target_net = ConvNet(net_shape, game.n_actions).to(device)
+    train_net = Network(net_shape, game.n_actions).to(device)
+    target_net = Network(net_shape, game.n_actions).to(device)
 
     agent = Agent(
         game,
@@ -209,7 +209,7 @@ if __name__ == "__main__":
         args.num_frames_stacked,
         args.repeat_for_frames,
     )
-    epsilon = args.epsilon_start
+    # epsilon = args.epsilon_start
     # optimizer = optim.SGD(train_net.parameters(), lr=args.learning_rate)
     optimizer = optim.Adam(train_net.parameters(), lr=args.learning_rate)
 
@@ -255,17 +255,19 @@ if __name__ == "__main__":
 
         print("\n-------- Epoch %d\n--------" % (epoch + 1))
         for step in trange(args.steps_per_epoch, leave=False):
-            # epsilon is constant for some steps and then decays
-            steps += 1
-            if steps >= epsilon_decay_first_frame:
-                epsilon = max(args.epsilon_final, (epsilon - epsilon_decay_per_frame))
-            else:
-                epsilon = args.epsilon_start
+            # # epsilon is constant for some steps and then decays
+            # steps += 1
+            # if steps >= epsilon_decay_first_frame:
+            #     epsilon = max(args.epsilon_final, (epsilon - epsilon_decay_per_frame))
+            # else:
+            #     epsilon = args.epsilon_start
 
-            if np.random.random() < epsilon:
-                done_reward = agent.play_step(True, device)
-            else:
-                done_reward = agent.play_step(False, device)
+            # if np.random.random() < epsilon:
+            #     done_reward = agent.play_step(True, device)
+            # else:
+            #     done_reward = agent.play_step(False, device)
+            
+            done_reward = agent.play_step(False, device)
 
             if len(experience_buffer) >= args.replay_buffer_size:
 
@@ -291,10 +293,15 @@ if __name__ == "__main__":
                 speed = (steps - last_reward_step) / (time.time() - ts)
                 last_reward_step = steps
                 ts = time.time()
-                writer.add_scalar("epsilon", epsilon, steps)
+                #writer.add_scalar("epsilon", epsilon, steps)
                 writer.add_scalar("speed", speed, steps)
                 writer.add_scalar("reward", done_reward, steps)
                 writer.add_scalar("mean_100_reward", np.mean(last_100_rewards), steps)
+
+            if steps % 500 == 0:
+                for layer_idx, weight_sigma_ratio in enumerate(train_net.noisy_layers_sigma_snr()):
+                    writer.add_scalar("sigma_snr_layer_%d" % (layer_idx+1),
+                                        weight_sigma_ratio, steps)
 
         e_mean = np.mean(rewards)
         e_std = np.std(rewards)
