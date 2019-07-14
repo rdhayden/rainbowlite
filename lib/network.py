@@ -52,7 +52,7 @@ class Network(nn.Module):
         # instantiate noisy layers, first 2 for the state_value and the last 2 for the advantage
         self.noisy_layers = [
             NoisyFactorizedLinear(conv_out_size, 512),
-            NoisyFactorizedLinear(512, 1)
+            NoisyFactorizedLinear(512, 1),
             NoisyFactorizedLinear(conv_out_size, 512),
             NoisyFactorizedLinear(512, n_actions),
         ]
