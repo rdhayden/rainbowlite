@@ -15,6 +15,14 @@ from matplotlib import pyplot as plt
 
 if __name__ == "__main__":
 
+    print("After running these tests it is advisable to run the following to ensure the whole thing runs together:")
+    print()
+    print("python vd_learning.py --troubleshoot True")
+    print()
+    print("Also note that where a single image of a frame is shown, you will need to close it to continue")
+    print()
+    input("Press any key to continue")
+
     print("Test ExtendedGame: sample_actions returns int between 1 and 3")
     device = torch.device("cuda")
     game = ExtendedGame("scenarios/basic.cfg")
