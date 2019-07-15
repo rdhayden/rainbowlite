@@ -240,7 +240,6 @@ if __name__ == "__main__":
                 )
                 loss_t.backward()
                 optimizer.step()
-                print("loss : {}".format(loss_t))
                 writer.add_scalar("loss", loss_t, steps)
 
             if done_reward:
