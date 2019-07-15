@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
         print("\n-------- Epoch %d\n--------" % (epoch + 1))
         for step in trange(args.steps_per_epoch, leave=False):
-            
+            steps += 1
             done_reward = agent.play_step(False, device)
 
             if len(experience_buffer) >= args.replay_buffer_size:
