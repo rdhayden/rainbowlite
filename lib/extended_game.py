@@ -9,10 +9,18 @@ class ExtendedGame(DoomGame):
         super(ExtendedGame, self).__init__()
         self.load_config(config_file_path)
 
-        # MOVE_LEFT [1,0,0]
-        # MOVE_RIGHT [0,1,0]
-        # ATTACK [0,0,1]
-        self.actions = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        # MOVE_LEFT [1,0,0,0,0]
+        # MOVE_RIGHT [0,1,0,0,0]
+        # TURN_LEFT [0,0,1,0,0]
+        # TURN_RIGHT [0,0,0,1,0]
+        # ATTACK [0,0,0,0,1]
+        self.actions = [
+            [1, 0, 0, 0, 0], 
+            [0, 1, 0, 0, 0], 
+            [0, 0, 1, 0, 0],
+            [0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1],
+            ]
 
         self.n_actions = len(self.actions)
 

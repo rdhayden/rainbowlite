@@ -250,7 +250,6 @@ if __name__ == "__main__":
                 speed = (steps - last_reward_step) / (time.time() - ts)
                 last_reward_step = steps
                 ts = time.time()
-                #writer.add_scalar("epsilon", epsilon, steps)
                 writer.add_scalar("speed", speed, steps)
                 writer.add_scalar("reward", done_reward, steps)
                 writer.add_scalar("mean_100_reward", np.mean(last_100_rewards), steps)
