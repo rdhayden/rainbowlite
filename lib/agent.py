@@ -34,6 +34,7 @@ class Agent:
 
     def _reset(self):
         self.game.new_episode(self.record_path)
+        self.health = self.game.get_state().game_variables
         # reset the stack of frames to zero, we'll append a frame at each step of the game
         self.state = np.zeros((self.num_frames_stacked, self.width, self.height))
         self.state = self._process_frame(self.game.get_state().screen_buffer)
@@ -76,6 +77,12 @@ class Agent:
         # take actions in the game
         reward = self.game.make_action_int(action, self.repeat_for_frames)
         is_done = self.game.is_episode_finished()
+
+        next_health = self.game.get_state().game_variables
+        if next_health < self.health:
+            reward -= 1
+            self.health = next_health
+
         if is_done:
             done_reward = self.game.get_total_reward()
             new_state = (
