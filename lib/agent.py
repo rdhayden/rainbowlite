@@ -78,11 +78,6 @@ class Agent:
         reward = self.game.make_action_int(action, self.repeat_for_frames)
         is_done = self.game.is_episode_finished()
 
-        next_health = self.game.get_state().game_variables
-        if next_health < self.health:
-            reward -= 1
-            self.health = next_health
-
         if is_done:
             done_reward = self.game.get_total_reward()
             new_state = (
@@ -93,6 +88,10 @@ class Agent:
                 self.exp_buffer.append(exp)
             self._reset()
         else:
+            next_health = self.game.get_state().game_variables
+            if next_health < self.health:
+                reward -= 1
+                self.health = next_health
             new_state = self._process_frame(self.game.get_state().screen_buffer)
             exp = Experience(self.state, action, reward, is_done, new_state)
             if write_to_buffer:
