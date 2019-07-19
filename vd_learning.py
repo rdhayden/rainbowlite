@@ -134,6 +134,12 @@ if __name__ == "__main__":
         help="for troubleshooting the code. Trains with /n window visible, 2 epochs, \
         100 steps per epoch, sync networks after 10 steps, replay buffer size of 100, batch size of 3, log to ./troubleshooting_runs",
     )
+    parser.add_argument(
+        "--health_reward",
+        type=int,
+        default=0,
+        help="sets the reward for negative change in health. Default: 0",
+    )
 
     args = parser.parse_args()
 
@@ -177,6 +183,7 @@ if __name__ == "__main__":
         height,
         args.num_frames_stacked,
         args.repeat_for_frames,
+        args.health_reward,
     )
 
     optimizer = optim.Adam(train_net.parameters(), lr=args.learning_rate)

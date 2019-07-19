@@ -16,6 +16,7 @@ class Agent:
         num_frames_stacked,
         repeat_for_frames,
         record=False,
+        health_reward = 0
     ):
         self.game = game
         self.net = net
@@ -24,6 +25,7 @@ class Agent:
         self.height = height
         self.num_frames_stacked = num_frames_stacked
         self.repeat_for_frames = repeat_for_frames
+        self.health_reward = health_reward
 
         if record:
             self.record_path = str(time.time()) + ".lmp"
@@ -88,10 +90,12 @@ class Agent:
                 self.exp_buffer.append(exp)
             self._reset()
         else:
-            next_health = self.game.get_state().game_variables
-            if next_health < self.health:
-                reward -= 1
-                self.health = next_health
+            if self.health_reward > 0:
+                next_health = self.game.get_state().game_variables
+                if next_health < self.health:
+                    reward -= self.health_reward
+                    self.health = next_health
+            
             new_state = self._process_frame(self.game.get_state().screen_buffer)
             exp = Experience(self.state, action, reward, is_done, new_state)
             if write_to_buffer:
