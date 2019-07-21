@@ -28,14 +28,14 @@ if __name__ == "__main__":
     for i in range(10):
         action = game.sample_actions()
         assert type(action) is int, "fail: action is not an int"
-        assert 0 <= action < 3, "fail: action is not between 1 and 3"
+        assert 0 <= action < 5, "fail: action is not between 1 and 3"
     print("pass: action is an int and is between 1 and 3")
 
     print(
         "Visually test ExtendedGame: start game, move right 4 times, move left 4 times, turn left 4 times, turn right 4 times, fire 12 times"
     )
     device = torch.device("cuda")
-    game = ExtendedGame("scenarios/basic.cfg")
+    game = ExtendedGame("scenarios/defend_the_line.cfg")
     game.set_window_visible(True)
     game.init()
 

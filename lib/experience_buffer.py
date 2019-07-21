@@ -38,7 +38,7 @@ class ExperienceBuffer:
             Rt += (self.gamma ** i) * self.temp_buffer[i].reward
 
         if len(self.buffer) == self._capacity:
-            # remove experience from teh back of the queue, this would be done by default when adding the next experience
+            # remove experience from the back of the queue, this would be done by default when adding the next experience
             # however we still need to deal with the states associated with the experience so ...
             # check if the states associated with the experience at the back of the queue are used by other experiences,
             # if not delete the states to reclaim memory, otherwise -1 from the count as this experience no longer

@@ -20,7 +20,7 @@ class ExtendedGame(DoomGame):
             [0, 0, 1, 0, 0],
             [0, 0, 0, 1, 0],
             [0, 0, 0, 0, 1],
-            ]
+        ]
 
         self.n_actions = len(self.actions)
 
@@ -28,5 +28,5 @@ class ExtendedGame(DoomGame):
         return np.random.choice(self.n_actions)
 
     def make_action_int(self, action_int, repeat_for_frames):
-        """a utility method to make it possible to make actions with integers"""
+        '''a utility method to make it possible to make actions with integers'''
         return self.make_action(self.actions[action_int], repeat_for_frames)

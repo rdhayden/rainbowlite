@@ -131,7 +131,7 @@ if __name__ == "__main__":
         "--troubleshoot",
         type=bool,
         default=False,
-        help="for troubleshooting the code. Trains with /n window visible, 2 epochs, \
+        help="for troubleshooting the code. Trains for 2 epochs, \
         100 steps per epoch, sync networks after 10 steps, replay buffer size of 100, batch size of 3, log to ./troubleshooting_runs",
     )
     parser.add_argument(
@@ -219,7 +219,7 @@ if __name__ == "__main__":
         with open("experience_buffer.pickle", "rb") as f:
             experience_buffer = pickle.load(f)
             print("buffer size: {}".format(len(experience_buffer)))
-
+        
     else:
         print("Initialising buffer with %d transitions" % initialisation_steps)
         for step in trange(initialisation_steps, leave=False):
