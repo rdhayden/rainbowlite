@@ -5,6 +5,10 @@ import pickle
 import zlib
 
 Experience = collections.namedtuple(
+    "Experience", field_names=["state", "action", "reward", "done", "new_state"]
+)
+
+ExperienceCompressed = collections.namedtuple(
     "Experience", field_names=["state_key", "action", "reward", "done", "new_state_key"]
 )
 
@@ -32,8 +36,8 @@ class ExperienceBuffer:
 
     def _make_n_step_experience(self):
         Rt = 0
-        state_key = self.put_image(self.temp_buffer[0].state_key)
-        new_state_key = self.put_image(self.temp_buffer[-1].new_state_key)
+        state_key = self.put_image(self.temp_buffer[0].state)
+        new_state_key = self.put_image(self.temp_buffer[-1].new_state)
         for i in range(len(self.temp_buffer)):
             Rt += (self.gamma ** i) * self.temp_buffer[i].reward
 
@@ -43,18 +47,18 @@ class ExperienceBuffer:
             # check if the states associated with the experience at the back of the queue are used by other experiences,
             # if not delete the states to reclaim memory, otherwise -1 from the count as this experience no longer
             # references them. This is effectively a garbage collector for unused states in the _imgs dict
-            experience = self.buffer.popleft()
-            if self._imgs[experience.state_key][1] == 1:
-                del self._imgs[experience.state_key]
+            compressed_experience = self.buffer.popleft()
+            if self._imgs[compressed_experience.state_key][1] == 1:
+                del self._imgs[compressed_experience.state_key]
             else:
-                self._imgs[experience.state_key][1] -= 1
-            if self._imgs[experience.new_state_key][1] == 1:
-                del self._imgs[experience.new_state_key]
+                self._imgs[compressed_experience.state_key][1] -= 1
+            if self._imgs[compressed_experience.new_state_key][1] == 1:
+                del self._imgs[compressed_experience.new_state_key]
             else:
-                self._imgs[experience.new_state_key][1] -= 1
+                self._imgs[compressed_experience.new_state_key][1] -= 1
 
         self.buffer.append(
-            Experience(
+            ExperienceCompressed(
                 state_key,
                 self.temp_buffer[0].action,
                 Rt,
